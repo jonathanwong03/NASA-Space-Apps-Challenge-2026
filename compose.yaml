@@ -1,0 +1,85 @@
+# FireSafe-SI - microgravity combustion intelligence for crew fire safety
+#   docker compose up --build        ->  http://localhost:8080
+name: firesafe-si
+
+x-backend-env: &backend-env
+  DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-firesafe}:${POSTGRES_PASSWORD:-firesafe}@db:5432/${POSTGRES_DB:-firesafe}
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-firesafe}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-firesafe}
+      POSTGRES_DB: ${POSTGRES_DB:-firesafe}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # ETL: NASA PSI live API (falls back to bundled snapshot) -> Postgres. Owns the schema.
+  ingestion:
+    build:
+      context: ./backend
+      dockerfile: ingestion_service/Dockerfile
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      PSI_API_BASE: ${PSI_API_BASE:-https://psi.nasa.gov/geode-py/ws}
+      SYNC_ON_STARTUP: ${SYNC_ON_STARTUP:-true}
+      ROOT_PATH: /api/ingest
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Read API: investigations, test tables, comparisons, reference data
+  catalog:
+    build:
+      context: ./backend
+      dockerfile: catalog_service/Dockerfile
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      ROOT_PATH: /api/catalog
+    depends_on:
+      ingestion:
+        condition: service_healthy
+
+  # SI layer: relevance ranking, gap analysis, search, Claude-powered Q&A and briefs
+  insights:
+    build:
+      context: ./backend
+      dockerfile: insights_service/Dockerfile
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      CLAUDE_MODEL: ${CLAUDE_MODEL:-claude-opus-5-5}
+      ROOT_PATH: /api/insights
+    depends_on:
+      ingestion:
+        condition: service_healthy
+
+  # React + Vite SPA served by nginx, which also acts as the API gateway (/api/*)
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      catalog:
+        condition: service_healthy
+      insights:
+        condition: service_healthy
+      ingestion:
+        condition: service_healthy
+
+volumes:
+  pgdata:

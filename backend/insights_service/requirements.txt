@@ -1,0 +1,2 @@
+-r ../requirements-common.txt
+anthropic==2.8.0
