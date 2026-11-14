@@ -1,7 +1,7 @@
 import { Suspense, lazy } from 'react'
-import { NavLink, Route, Routes } from 'react-router-dom'
+import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { api } from './api.js'
-import { Loading, useAsync } from './components/ui.jsx'
+import { ErrorBoundary, Loading, useAsync } from './components/ui.jsx'
 const Overview = lazy(() => import('./pages/Overview.jsx'))
 const Explorer = lazy(() => import('./pages/Explorer.jsx'))
 const InvestigationDetail = lazy(() => import('./pages/InvestigationDetail.jsx'))
@@ -31,6 +31,7 @@ const NAV = [
 export default function App() {
   const status = useAsync(() => api.ingestStatus(), [])
   const si = useAsync(() => api.insightsStatus(), [])
+  const location = useLocation()
   return (
     <div className="app">
       <aside className="sidebar">
@@ -57,6 +58,7 @@ export default function App() {
         </div>
       </aside>
       <main className="main">
+        <ErrorBoundary resetKey={location.pathname + location.search}>
         <Suspense fallback={<Loading lines={6} />}>
         <Routes>
           <Route path="/" element={<Overview />} />
@@ -72,6 +74,7 @@ export default function App() {
           <Route path="*" element={<div className="card">Page not found.</div>} />
         </Routes>
         </Suspense>
+        </ErrorBoundary>
       </main>
     </div>
   )

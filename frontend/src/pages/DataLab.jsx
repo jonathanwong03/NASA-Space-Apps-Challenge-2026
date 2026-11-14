@@ -32,8 +32,11 @@ export default function DataLab() {
 
   useEffect(() => {
     if (!table.data) return
+    // default axes: skip bookkeeping columns (run day, test #, year...) when better ones exist
+    const bookkeeping = /\b(day|year|month|date|gmt|test|#|number|sample|session)\b/i
     const varied = table.data.columns.filter((c) => c.numeric && c.varied)
-    const nums = varied.length >= 2 ? varied : table.data.columns.filter((c) => c.numeric)
+    const physical = varied.filter((c) => !bookkeeping.test(c.name))
+    const nums = physical.length >= 2 ? physical : varied.length >= 2 ? varied : table.data.columns.filter((c) => c.numeric)
     const want = params.get('x'), wantY = params.get('y')
     setX(want && nums.some((c) => c.name === want) ? want : nums[0]?.name || '')
     setY(wantY && nums.some((c) => c.name === wantY) ? wantY : nums[1]?.name || nums[0]?.name || '')
@@ -108,7 +111,7 @@ export default function DataLab() {
       </div>
 
       {!tableId ? <div className="notice">Choose a test table or a quick plot to begin. {tables.data && `${tables.data.length} tables from ${new Set(tables.data.map((t) => t.accession)).size} investigations are available.`}</div> :
-        table.loading ? <Loading lines={10} /> : table.error ? <ErrorBox error={table.error} /> : (
+        table.error ? <ErrorBox error={table.error} /> : table.loading || !table.data ? <Loading lines={10} /> : (
           <section className="card">
             <div className="card-head">
               <h2>{x && y ? `${y} vs ${x}` : table.data.name}</h2>

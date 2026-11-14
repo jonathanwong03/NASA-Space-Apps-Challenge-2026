@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Component, useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Link } from 'react-router-dom'
@@ -25,18 +25,47 @@ const STATUS = {
 }
 
 export function useAsync(fn, deps = []) {
-  const [state, set] = useState({ data: null, error: null, loading: true })
+  const key = JSON.stringify(deps)
+  const [state, set] = useState({ data: null, error: null, loading: true, key })
   useEffect(() => {
     let alive = true
-    set((s) => ({ ...s, loading: true, error: null }))
+    set((s) => ({ ...s, loading: true, error: null, key }))
     fn().then(
-      (data) => alive && set({ data, error: null, loading: false }),
-      (error) => alive && set({ data: null, error, loading: false }),
+      (data) => alive && set({ data, error: null, loading: false, key }),
+      (error) => alive && set({ data: null, error, loading: false, key }),
     )
     return () => { alive = false }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)
+  // Inputs changed but the effect hasn't run yet: report loading, never a stale "done" result.
+  if (state.key !== key) return { data: state.data, error: null, loading: true }
   return state
+}
+
+/** Catches render errors so one broken view shows a message instead of blanking the whole app. */
+export class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { error: null }
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error }
+  }
+
+  componentDidUpdate(prev) {
+    if (prev.resetKey !== this.props.resetKey && this.state.error) this.setState({ error: null })
+  }
+
+  render() {
+    if (!this.state.error) return this.props.children
+    return (
+      <div className="error" role="alert">
+        <b>Something went wrong on this page.</b> {String(this.state.error?.message || this.state.error)}
+        <div style={{ marginTop: 8 }}><button className="btn sm" onClick={() => this.setState({ error: null })}>Try again</button></div>
+      </div>
+    )
+  }
 }
 
 export function Loading({ lines = 3 }) {

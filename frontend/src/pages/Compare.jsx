@@ -67,7 +67,7 @@ export default function Compare() {
       </div>
 
       {ids.length < 2 ? <div className="notice">Select at least two investigations, or pick a preset.</div> :
-        cmp.loading ? <Loading lines={10} /> : cmp.error ? <ErrorBox error={cmp.error} /> : (
+        cmp.error ? <ErrorBox error={cmp.error} /> : cmp.loading || !cmp.data ? <Loading lines={10} /> : (
           <>
             <div className="grid g2" style={{ marginBottom: 16 }}>
               <section className="card">
