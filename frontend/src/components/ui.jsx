@@ -184,6 +184,19 @@ function linkify(children) {
   return Array.isArray(children) ? children.map((c, i) => walk(c, i)) : walk(children, 0)
 }
 
+/** Small copy-to-clipboard button with transient "Copied" feedback. */
+export function CopyButton({ text, label = 'Copy', title }) {
+  const [done, setDone] = useState(false)
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(text); setDone(true); setTimeout(() => setDone(false), 1400) } catch { /* denied */ }
+  }
+  return (
+    <button className="btn sm ghost" onClick={copy} title={title || `Copy ${label.toLowerCase()}`} aria-label={title || `Copy ${label.toLowerCase()}`}>
+      {done ? '✓ Copied' : `⧉ ${label}`}
+    </button>
+  )
+}
+
 export function fmtRange(r, unit = '', scale = 1, digits = 3) {
   if (!r) return '—'
   const lo = +(r.min * scale).toPrecision(digits)

@@ -2,7 +2,7 @@ import { Fragment, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../api.js'
 import {
-  ErrorBox, Loading, Markdown, PhaseTag, PillarTag, RangeBar, TierTag, fmtRange, useAsync,
+  CopyButton, ErrorBox, Loading, Markdown, PhaseTag, PillarTag, RangeBar, TierTag, fmtRange, useAsync,
 } from '../components/ui.jsx'
 
 export default function InvestigationDetail() {
@@ -34,6 +34,8 @@ export default function InvestigationDetail() {
           </div>
         </div>
         <div className="row">
+          {d.doi && <CopyButton label="Cite" title="Copy DOI citation"
+            text={`${d.acronym ? `${d.acronym}: ` : ''}${d.title}. NASA Physical Sciences Informatics, ${d.accession}. https://doi.org/${d.doi}`} />}
           <Link className="btn" to={`/compare?ids=${d.accession}`}>⇄ Compare</Link>
           <a className="btn" href={d.psi_url} target="_blank" rel="noreferrer">Open in NASA PSI ↗</a>
         </div>
