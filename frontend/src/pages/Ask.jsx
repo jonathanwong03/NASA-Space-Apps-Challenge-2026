@@ -63,9 +63,13 @@ export default function Ask() {
         <section className="card">
           <div className="chat-log" aria-live="polite">
             {messages.length === 0 && (
-              <div className="stack">
-                <p className="muted">Try one of these:</p>
-                {SUGGESTIONS.map((s) => <button key={s} className="chip" style={{ padding: '8px 12px' }} onClick={() => send(s)}>{s}</button>)}
+              <div className="ask-empty">
+                <div className="ask-empty-icon" aria-hidden="true">✦</div>
+                <h3 style={{ margin: '0 0 2px' }}>Ask the combustion record</h3>
+                <p className="muted" style={{ margin: '0 0 14px' }}>Grounded answers with [PSI-xx] citations. Try one of these:</p>
+                <div className="suggest-grid">
+                  {SUGGESTIONS.map((s) => <button key={s} className="chip suggest" onClick={() => send(s)}>{s}</button>)}
+                </div>
               </div>
             )}
             {messages.map((m, i) => (

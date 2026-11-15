@@ -349,6 +349,12 @@ table.data tr:hover td { background: color-mix(in srgb, var(--text-primary) 4%, 
 .chip { padding: 5px 11px; border-radius: var(--radius-pill); background: var(--surface-2); border: 1px solid var(--border-strong); color: var(--text-secondary); font-size: 12.5px; cursor: pointer; text-align: left; font-family: inherit; transition: color 0.14s var(--ease), border-color 0.14s var(--ease), transform 0.12s var(--ease); }
 .chip:hover { color: var(--text-primary); border-color: var(--focus); transform: translateY(-1px); }
 .composer { display: flex; gap: 10px; align-items: flex-end; margin-top: 14px; }
+.ask-empty { padding: 20px 4px; }
+.ask-empty-icon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--brand-soft), transparent); border: 1px solid rgba(252,61,33,.3); color: var(--brand-2); box-shadow: 0 0 20px rgba(252,61,33,.18); }
+.suggest-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+@media (max-width: 680px) { .suggest-grid { grid-template-columns: 1fr; } }
+.chip.suggest { padding: 11px 13px; line-height: 1.4; }
 .cursor::after { content: '▍'; animation: blink 1s steps(2) infinite; color: var(--text-muted); }
 @keyframes blink { 50% { opacity: 0; } }
 
