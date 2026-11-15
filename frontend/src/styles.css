@@ -297,17 +297,18 @@ label.field { display: flex; flex-direction: column; gap: 5px; color: var(--text
 .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); max-height: 520px; }
 table.data { border-collapse: collapse; width: 100%; font-size: 12.5px; }
 table.data th, table.data td { padding: 8px 11px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
-table.data th { position: sticky; top: 0; background: var(--surface-solid-2); color: var(--text-secondary); font-weight: 600; z-index: 1; white-space: nowrap; backdrop-filter: blur(10px); }
+table.data th { position: sticky; top: 0; background: var(--surface-solid-2); color: var(--text-secondary); font-weight: 600; z-index: 1; white-space: nowrap; backdrop-filter: blur(10px); letter-spacing: 0.01em; }
 table.data td.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); }
 table.data tbody tr { transition: background 0.12s var(--ease); }
-table.data tr:hover td { background: color-mix(in srgb, var(--text-primary) 4%, transparent); }
+table.data tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--text-primary) 1.5%, transparent); }
+table.data tr:hover td { background: color-mix(in srgb, var(--text-primary) 5%, transparent); }
 
 /* ------------------------------------------------------------------ bars */
 .bar-track { position: relative; height: 10px; background: var(--surface-3); border-radius: 5px; overflow: hidden; }
 .bar-fill { position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, var(--seq-500), var(--seq-200)); border-radius: 0 5px 5px 0; transition: width 0.5s var(--ease); }
 .range-track { position: relative; height: 22px; background: var(--surface-2); border-radius: 5px; }
 .range-band { position: absolute; top: 0; bottom: 0; background: rgba(252, 61, 33, .12); border-left: 1px dashed rgba(252,61,33,.7); border-right: 1px dashed rgba(252,61,33,.7); }
-.range-bar { position: absolute; top: 6px; height: 10px; border-radius: 5px; min-width: 6px; background: var(--seq-500); }
+.range-bar { position: absolute; top: 6px; height: 10px; border-radius: 5px; min-width: 6px; background: var(--seq-500); box-shadow: 0 1px 4px rgba(0,0,0,.25); }
 .axis-ticks { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 11px; font-family: var(--mono); margin-top: 3px; }
 
 /* ------------------------------------------------------------------ rank list */
