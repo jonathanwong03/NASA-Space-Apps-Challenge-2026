@@ -7,8 +7,8 @@ import { api } from '../api.js'
 import { ErrorBox, Loading, useAsync } from '../components/ui.jsx'
 
 // First three categorical slots validate for all-pairs (scatter); the rest folds into "Other".
-const GROUP_COLORS = ['#3987e5', '#d95926', '#199e70']
-const OTHER = '#8a919c'
+const GROUP_COLORS = ['#4a93ec', '#e5663a', '#22b07f']
+const OTHER = '#929aa6'
 
 const PRESETS = [
   { label: 'FLEX: O2 vs burn time', match: 'FLEX', x: /^O initial/, y: /Burn time/ },
@@ -140,7 +140,7 @@ export default function DataLab() {
                       <YAxis type="number" dataKey={y} name={y} domain={['auto', 'auto']} stroke="var(--text-muted)" tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
                              label={{ value: y, angle: -90, position: 'insideLeft', fill: 'var(--text-secondary)', fontSize: 12 }} />
                       <Tooltip cursor={{ strokeDasharray: '3 3', stroke: 'var(--border-strong)' }} content={<Tip x={x} y={y} group={group} />} />
-                      {series.map((s) => <Scatter key={s.name} name={s.name} data={s.data} fill={s.color} stroke="#0b0e14" strokeWidth={1.5} isAnimationActive={false} />)}
+                      {series.map((s) => <Scatter key={s.name} name={s.name} data={s.data} fill={s.color} stroke="var(--chart-stroke)" strokeWidth={1.5} isAnimationActive={false} />)}
                     </ScatterChart>
                   </ResponsiveContainer>
                 </div>

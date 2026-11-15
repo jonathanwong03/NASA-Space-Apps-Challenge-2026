@@ -96,7 +96,7 @@ export default function Coverage() {
                   {/* draw order: solids last so the key solid-material evidence is never hidden */}
                   {['gas', 'liquid', 'aerosol', 'solid'].filter((ph) => series[ph]).map((phase) => [phase, series[phase]]).map(([phase, data]) => (
                     <Scatter key={phase} name={PHASES[phase].label} data={data} fill={PHASES[phase].hex}
-                             stroke="#0b0e14" strokeWidth={1.5} fillOpacity={0.9} isAnimationActive={false} />
+                             stroke="var(--chart-stroke)" strokeWidth={1.5} fillOpacity={0.9} isAnimationActive={false} />
                   ))}
                 </ScatterChart>
               </ResponsiveContainer>

@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom'
 
 // Fuel phase -> fixed categorical slot (colour follows the entity, never its rank).
 export const PHASES = {
-  solid: { label: 'Solid materials', color: 'var(--series-1)', hex: '#3987e5' },
-  liquid: { label: 'Liquid droplets', color: 'var(--series-2)', hex: '#d95926' },
-  gas: { label: 'Gaseous flames', color: 'var(--series-3)', hex: '#199e70' },
-  aerosol: { label: 'Smoke / dust aerosol', color: 'var(--series-other)', hex: '#8a919c' },
+  solid: { label: 'Solid materials', color: 'var(--series-1)', hex: '#4a93ec' },
+  liquid: { label: 'Liquid droplets', color: 'var(--series-2)', hex: '#e5663a' },
+  gas: { label: 'Gaseous flames', color: 'var(--series-3)', hex: '#22b07f' },
+  aerosol: { label: 'Smoke / dust aerosol', color: 'var(--series-other)', hex: '#929aa6' },
 }
 
 export const PILLARS = {
