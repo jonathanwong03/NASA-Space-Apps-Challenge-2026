@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { api } from './api.js'
 import { ErrorBoundary, Loading, ThemeToggle, useAsync, useTheme } from './components/ui.jsx'
@@ -34,6 +34,7 @@ export default function App() {
   const si = useAsync(() => api.insightsStatus(), [])
   const location = useLocation()
   const [theme, toggleTheme] = useTheme()
+  useEffect(() => { window.scrollTo({ top: 0 }) }, [location.pathname])
   const active = NAV.find((n) => n.to && (n.end ? location.pathname === n.to : location.pathname.startsWith(n.to) && n.to !== '/'))
   return (
     <div className="app">
@@ -83,6 +84,7 @@ export default function App() {
         </header>
         <ErrorBoundary resetKey={location.pathname + location.search}>
         <Suspense fallback={<Loading lines={6} />}>
+        <div key={location.pathname} className="route-view">
         <Routes>
           <Route path="/" element={<Overview />} />
           <Route path="/rank" element={<Ranking />} />
@@ -96,6 +98,7 @@ export default function App() {
           <Route path="/sources" element={<Sources />} />
           <Route path="*" element={<div className="card">Page not found.</div>} />
         </Routes>
+        </div>
         </Suspense>
         </ErrorBoundary>
       </main>
