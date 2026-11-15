@@ -1,7 +1,7 @@
 import { Suspense, lazy } from 'react'
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { api } from './api.js'
-import { ErrorBoundary, Loading, useAsync } from './components/ui.jsx'
+import { ErrorBoundary, Loading, ThemeToggle, useAsync, useTheme } from './components/ui.jsx'
 const Overview = lazy(() => import('./pages/Overview.jsx'))
 const Explorer = lazy(() => import('./pages/Explorer.jsx'))
 const InvestigationDetail = lazy(() => import('./pages/InvestigationDetail.jsx'))
@@ -32,6 +32,8 @@ export default function App() {
   const status = useAsync(() => api.ingestStatus(), [])
   const si = useAsync(() => api.insightsStatus(), [])
   const location = useLocation()
+  const [theme, toggleTheme] = useTheme()
+  const active = NAV.find((n) => n.to && (n.end ? location.pathname === n.to : location.pathname.startsWith(n.to) && n.to !== '/'))
   return (
     <div className="app">
       <aside className="sidebar">
@@ -58,6 +60,22 @@ export default function App() {
         </div>
       </aside>
       <main className="main">
+        <header className="topbar">
+          <div className="crumb">
+            <span className="muted">FireSafe-SI</span>
+            <span className="muted">/</span>
+            <span>{active?.label || 'Overview'}</span>
+          </div>
+          <div className="row" style={{ gap: 8 }}>
+            {si.data && (
+              <span className="tag" title="Answer engine">
+                <span className="dot" style={{ background: si.data.engine === 'claude' ? 'var(--good)' : 'var(--text-muted)' }} />
+                {si.data.engine === 'claude' ? 'Claude online' : 'Offline SI'}
+              </span>
+            )}
+            <ThemeToggle theme={theme} onToggle={toggleTheme} />
+          </div>
+        </header>
         <ErrorBoundary resetKey={location.pathname + location.search}>
         <Suspense fallback={<Loading lines={6} />}>
         <Routes>

@@ -24,6 +24,28 @@ const STATUS = {
   good: { color: 'var(--good)', icon: '✓', label: 'Covered' },
 }
 
+/** Theme: 'dark' | 'light', persisted to localStorage and reflected on <html data-theme>. */
+export function useTheme() {
+  const [theme, setTheme] = useState(() => {
+    try { return localStorage.getItem('firesafe-theme') || 'dark' } catch { return 'dark' }
+  })
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    try { localStorage.setItem('firesafe-theme', theme) } catch { /* private mode */ }
+  }, [theme])
+  return [theme, () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))]
+}
+
+export function ThemeToggle({ theme, onToggle }) {
+  const dark = theme !== 'light'
+  return (
+    <button className="btn sm ghost icon-btn" onClick={onToggle} title={`Switch to ${dark ? 'light' : 'dark'} mode`}
+            aria-label={`Switch to ${dark ? 'light' : 'dark'} mode`}>
+      {dark ? '☾' : '☀'}
+    </button>
+  )
+}
+
 export function useAsync(fn, deps = []) {
   const key = JSON.stringify(deps)
   const [state, set] = useState({ data: null, error: null, loading: true, key })
