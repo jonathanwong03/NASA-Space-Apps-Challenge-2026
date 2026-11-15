@@ -57,12 +57,18 @@ export default function App() {
         </nav>
         <div className="sidebar-foot">
           {status.data && (
-            <div>
-              <div><b style={{ color: 'var(--text-secondary)' }}>{status.data.investigations}</b> investigations · <b style={{ color: 'var(--text-secondary)' }}>{status.data.test_rows}</b> test rows</div>
-              <div>Data: {status.data.data_mode === 'live' ? 'live NASA PSI API' : 'bundled PSI snapshot'}{status.data.syncing ? ' (syncing…)' : ''}</div>
+            <div className="foot-card">
+              <div className="foot-metrics">
+                <span><b>{status.data.investigations}</b> investigations</span>
+                <span><b>{status.data.test_rows}</b> test rows</span>
+              </div>
+              <div className="foot-line">
+                <span className="dot" style={{ background: status.data.data_mode === 'live' ? 'var(--good)' : 'var(--warning)' }} />
+                {status.data.data_mode === 'live' ? 'Live NASA PSI API' : 'Bundled PSI snapshot'}{status.data.syncing ? ' · syncing…' : ''}
+              </div>
+              {si.data && <div className="foot-line">SI: {si.data.engine === 'claude' ? `Claude (${si.data.model})` : 'offline rules'}</div>}
             </div>
           )}
-          {si.data && <div style={{ marginTop: 4 }}>SI engine: {si.data.engine === 'claude' ? `Claude (${si.data.model})` : 'offline rules'}</div>}
         </div>
       </aside>
       <main className="main">
