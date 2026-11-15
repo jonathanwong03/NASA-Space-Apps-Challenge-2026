@@ -90,8 +90,13 @@ export class ErrorBoundary extends Component {
   }
 }
 
-export function Loading({ lines = 3 }) {
-  return <div aria-busy="true">{Array.from({ length: lines }, (_, i) => <div key={i} className="skeleton" style={{ width: `${90 - i * 15}%` }} />)}</div>
+export function Loading({ lines = 3, card = false }) {
+  const body = (
+    <div aria-busy="true" className="skeleton-group">
+      {Array.from({ length: lines }, (_, i) => <div key={i} className="skeleton" style={{ width: `${Math.max(90 - i * 12, 40)}%` }} />)}
+    </div>
+  )
+  return card ? <div className="card">{body}</div> : body
 }
 
 export function ErrorBox({ error }) {

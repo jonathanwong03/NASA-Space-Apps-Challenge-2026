@@ -87,7 +87,7 @@ export default function App() {
           </div>
         </header>
         <ErrorBoundary resetKey={location.pathname + location.search}>
-        <Suspense fallback={<Loading lines={6} />}>
+        <Suspense fallback={<Loading lines={6} card />}>
         <div key={location.pathname} className="route-view">
         <Routes>
           <Route path="/" element={<Overview />} />
