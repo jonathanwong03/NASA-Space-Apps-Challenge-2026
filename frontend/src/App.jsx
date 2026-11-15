@@ -40,7 +40,11 @@ export default function App() {
     <div className="app">
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-mark" aria-hidden="true" />
+          <div className="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" width="20" height="20">
+              <path d="M32 13c7 7 11 12 11 20a11 11 0 0 1-22 0c0-4 2-7 4-9 0 3 2 5 4 5 2 0 3-2 2-5-1-3-1-6-1-16z" fill="#fff" />
+            </svg>
+          </div>
           <div>
             <div className="brand-name">FireSafe-SI</div>
             <div className="brand-sub">Microgravity combustion intelligence</div>
