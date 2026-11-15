@@ -106,13 +106,27 @@ export default function App() {
           <Route path="/datalab" element={<DataLab />} />
           <Route path="/earth" element={<EarthBenefits />} />
           <Route path="/sources" element={<Sources />} />
-          <Route path="*" element={<div className="card">Page not found.</div>} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         </div>
         </Suspense>
         </ErrorBoundary>
       </main>
       <CommandPalette />
+    </div>
+  )
+}
+
+function NotFound() {
+  return (
+    <div className="empty-state card">
+      <div className="empty-icon" aria-hidden="true">✦</div>
+      <h2>Lost in space</h2>
+      <p className="muted">That page drifted out of range. Pick a destination below or press <kbd>⌘K</kbd>.</p>
+      <div className="row" style={{ justifyContent: 'center', marginTop: 6 }}>
+        <NavLink to="/" className="btn primary">Back to Overview</NavLink>
+        <NavLink to="/investigations" className="btn">Browse investigations</NavLink>
+      </div>
     </div>
   )
 }
