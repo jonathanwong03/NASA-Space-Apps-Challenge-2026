@@ -16,16 +16,14 @@ export default function Overview() {
   const s = stats.data
   return (
     <>
-      <div className="page-head">
-        <div>
-          <div className="eyebrow">NASA Space Apps 2026 · Fire safety for human exploration</div>
-          <h1>From microgravity flames to safer Moon bases</h1>
-          <p>
-            FireSafe-SI pulls every combustion-science investigation from NASA's Physical Sciences Informatics (PSI)
-            database, extracts the test conditions, and ranks and interprets the findings for spacecraft, stations,
-            lunar habitats, rovers and Mars.
-          </p>
-        </div>
+      <div className="hero">
+        <div className="eyebrow">NASA Space Apps 2026 · Fire safety for human exploration</div>
+        <h1 className="hero-title">From microgravity flames to safer Moon bases</h1>
+        <p>
+          FireSafe-SI pulls every combustion-science investigation from NASA's Physical Sciences Informatics (PSI)
+          database, extracts the test conditions, and ranks and interprets the findings for spacecraft, stations,
+          lunar habitats, rovers and Mars.
+        </p>
       </div>
 
       {stats.error && <ErrorBox error={stats.error} />}
