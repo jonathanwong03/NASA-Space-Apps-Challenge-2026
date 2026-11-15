@@ -120,11 +120,34 @@ export function StatusBadge({ severity }) {
   return <span className="status" style={{ color: s.color }}><span className="sicon" style={{ background: s.color }}>{s.icon}</span>{s.label}</span>
 }
 
+/** Count up to a numeric target once, respecting reduced-motion. Falls back to the raw node for strings. */
+function CountUp({ value }) {
+  const num = typeof value === 'number' ? value : null
+  const [shown, setShown] = useState(num ?? 0)
+  useEffect(() => {
+    if (num == null) return
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { setShown(num); return }
+    let raf, start
+    const dur = 650
+    const step = (t) => {
+      start ??= t
+      const p = Math.min((t - start) / dur, 1)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setShown(Math.round(num * eased))
+      if (p < 1) raf = requestAnimationFrame(step)
+    }
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [num])
+  if (num == null) return value
+  return shown.toLocaleString()
+}
+
 export function Stat({ label, value, note }) {
   return (
     <div className="card stat">
       <div className="stat-label">{label}</div>
-      <div className="stat-value">{value}</div>
+      <div className="stat-value"><CountUp value={value} /></div>
       {note && <div className="stat-note">{note}</div>}
     </div>
   )

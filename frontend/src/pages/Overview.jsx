@@ -31,7 +31,7 @@ export default function Overview() {
       {stats.error && <ErrorBox error={stats.error} />}
       <div className="grid g4" style={{ marginBottom: 16 }}>
         <Stat label="PSI combustion investigations" value={s ? s.investigations : '…'} note={s && `${s.flight} with flight data`} />
-        <Stat label="Test records extracted" value={s ? s.test_rows.toLocaleString() : '…'} note={s && `from ${s.tables} experimental tables`} />
+        <Stat label="Test records extracted" value={s ? s.test_rows : '…'} note={s && `from ${s.tables} experimental tables`} />
         <Stat label="Highest O2 tested in microgravity" value={s ? `${s.max_o2.value}%` : '…'} note={s && `${s.max_o2.label}, gaseous fuel`} />
         <Stat label="Highest O2 for solid materials" value={s ? `${s.solid_max_o2}%` : '…'} note="Moon Base target is ≥ 30% O2" />
       </div>
