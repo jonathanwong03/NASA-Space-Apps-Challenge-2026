@@ -16,22 +16,20 @@ export default function Overview() {
   const s = stats.data
   return (
     <>
-      <div className="page-head">
-        <div>
-          <div className="eyebrow">NASA Space Apps 2026 · Fire safety for human exploration</div>
-          <h1>From microgravity flames to safer Moon bases</h1>
-          <p>
-            FireSafe-SI pulls every combustion-science investigation from NASA's Physical Sciences Informatics (PSI)
-            database, extracts the test conditions, and ranks and interprets the findings for spacecraft, stations,
-            lunar habitats, rovers and Mars.
-          </p>
-        </div>
+      <div className="hero">
+        <div className="eyebrow">NASA Space Apps 2026 · Fire safety for human exploration</div>
+        <h1 className="hero-title">From microgravity flames to safer Moon bases</h1>
+        <p>
+          FireSafe-SI pulls every combustion-science investigation from NASA's Physical Sciences Informatics (PSI)
+          database, extracts the test conditions, and ranks and interprets the findings for spacecraft, stations,
+          lunar habitats, rovers and Mars.
+        </p>
       </div>
 
       {stats.error && <ErrorBox error={stats.error} />}
       <div className="grid g4" style={{ marginBottom: 16 }}>
         <Stat label="PSI combustion investigations" value={s ? s.investigations : '…'} note={s && `${s.flight} with flight data`} />
-        <Stat label="Test records extracted" value={s ? s.test_rows.toLocaleString() : '…'} note={s && `from ${s.tables} experimental tables`} />
+        <Stat label="Test records extracted" value={s ? s.test_rows : '…'} note={s && `from ${s.tables} experimental tables`} />
         <Stat label="Highest O2 tested in microgravity" value={s ? `${s.max_o2.value}%` : '…'} note={s && `${s.max_o2.label}, gaseous fuel`} />
         <Stat label="Highest O2 for solid materials" value={s ? `${s.solid_max_o2}%` : '…'} note="Moon Base target is ≥ 30% O2" />
       </div>

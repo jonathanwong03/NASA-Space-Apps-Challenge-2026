@@ -1,7 +1,8 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { api } from './api.js'
-import { ErrorBoundary, Loading, useAsync } from './components/ui.jsx'
+import { ErrorBoundary, Loading, ThemeToggle, useAsync, useTheme } from './components/ui.jsx'
+import CommandPalette from './components/CommandPalette.jsx'
 const Overview = lazy(() => import('./pages/Overview.jsx'))
 const Explorer = lazy(() => import('./pages/Explorer.jsx'))
 const InvestigationDetail = lazy(() => import('./pages/InvestigationDetail.jsx'))
@@ -32,11 +33,18 @@ export default function App() {
   const status = useAsync(() => api.ingestStatus(), [])
   const si = useAsync(() => api.insightsStatus(), [])
   const location = useLocation()
+  const [theme, toggleTheme] = useTheme()
+  useEffect(() => { window.scrollTo({ top: 0 }) }, [location.pathname])
+  const active = NAV.find((n) => n.to && (n.end ? location.pathname === n.to : location.pathname.startsWith(n.to) && n.to !== '/'))
   return (
     <div className="app">
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-mark" aria-hidden="true" />
+          <div className="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" width="20" height="20">
+              <path d="M32 13c7 7 11 12 11 20a11 11 0 0 1-22 0c0-4 2-7 4-9 0 3 2 5 4 5 2 0 3-2 2-5-1-3-1-6-1-16z" fill="#fff" />
+            </svg>
+          </div>
           <div>
             <div className="brand-name">FireSafe-SI</div>
             <div className="brand-sub">Microgravity combustion intelligence</div>
@@ -49,17 +57,44 @@ export default function App() {
         </nav>
         <div className="sidebar-foot">
           {status.data && (
-            <div>
-              <div><b style={{ color: 'var(--text-secondary)' }}>{status.data.investigations}</b> investigations · <b style={{ color: 'var(--text-secondary)' }}>{status.data.test_rows}</b> test rows</div>
-              <div>Data: {status.data.data_mode === 'live' ? 'live NASA PSI API' : 'bundled PSI snapshot'}{status.data.syncing ? ' (syncing…)' : ''}</div>
+            <div className="foot-card">
+              <div className="foot-metrics">
+                <span><b>{status.data.investigations}</b> investigations</span>
+                <span><b>{status.data.test_rows}</b> test rows</span>
+              </div>
+              <div className="foot-line">
+                <span className="dot" style={{ background: status.data.data_mode === 'live' ? 'var(--good)' : 'var(--warning)' }} />
+                {status.data.data_mode === 'live' ? 'Live NASA PSI API' : 'Bundled PSI snapshot'}{status.data.syncing ? ' · syncing…' : ''}
+              </div>
+              {si.data && <div className="foot-line">SI: {si.data.engine === 'claude' ? `Claude (${si.data.model})` : 'offline rules'}</div>}
             </div>
           )}
-          {si.data && <div style={{ marginTop: 4 }}>SI engine: {si.data.engine === 'claude' ? `Claude (${si.data.model})` : 'offline rules'}</div>}
         </div>
       </aside>
       <main className="main">
+        <header className="topbar">
+          <div className="crumb">
+            <span className="muted">FireSafe-SI</span>
+            <span className="muted">/</span>
+            <span>{active?.label || 'Overview'}</span>
+          </div>
+          <div className="row" style={{ gap: 8 }}>
+            <button className="btn sm ghost search-trigger" onClick={() => window.dispatchEvent(new Event('firesafe:palette'))}
+                    aria-label="Open command palette">
+              <span className="muted">⌕ Search</span><kbd>⌘K</kbd>
+            </button>
+            {si.data && (
+              <span className="tag" title="Answer engine">
+                <span className="dot" style={{ background: si.data.engine === 'claude' ? 'var(--good)' : 'var(--text-muted)' }} />
+                {si.data.engine === 'claude' ? 'Claude online' : 'Offline SI'}
+              </span>
+            )}
+            <ThemeToggle theme={theme} onToggle={toggleTheme} />
+          </div>
+        </header>
         <ErrorBoundary resetKey={location.pathname + location.search}>
-        <Suspense fallback={<Loading lines={6} />}>
+        <Suspense fallback={<Loading lines={6} card />}>
+        <div key={location.pathname} className="route-view">
         <Routes>
           <Route path="/" element={<Overview />} />
           <Route path="/rank" element={<Ranking />} />
@@ -71,11 +106,27 @@ export default function App() {
           <Route path="/datalab" element={<DataLab />} />
           <Route path="/earth" element={<EarthBenefits />} />
           <Route path="/sources" element={<Sources />} />
-          <Route path="*" element={<div className="card">Page not found.</div>} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
+        </div>
         </Suspense>
         </ErrorBoundary>
       </main>
+      <CommandPalette />
+    </div>
+  )
+}
+
+function NotFound() {
+  return (
+    <div className="empty-state card">
+      <div className="empty-icon" aria-hidden="true">✦</div>
+      <h2>Lost in space</h2>
+      <p className="muted">That page drifted out of range. Pick a destination below or press <kbd>⌘K</kbd>.</p>
+      <div className="row" style={{ justifyContent: 'center', marginTop: 6 }}>
+        <NavLink to="/" className="btn primary">Back to Overview</NavLink>
+        <NavLink to="/investigations" className="btn">Browse investigations</NavLink>
+      </div>
     </div>
   )
 }

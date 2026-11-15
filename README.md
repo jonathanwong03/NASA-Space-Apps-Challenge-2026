@@ -119,6 +119,11 @@ was also evaluated but blocks automated clients (HTTP 403), so publication lists
 - **Earth Benefits:** NASA Spinoffs plus each investigation's stated Earth benefits
 - **Data Sources & Sync:** provenance, live-sync button, sync history
 
+### Interface
+- **Command palette** (`⌘K` / `Ctrl-K`): jump to any page or search investigations by name, acronym or accession.
+- **Light / dark theme**: toggle in the top bar, remembered across visits.
+- Frosted-glass surfaces, animated metrics and route transitions throughout; all motion respects `prefers-reduced-motion`.
+
 ---
 
 ## Configuration (`.env`)

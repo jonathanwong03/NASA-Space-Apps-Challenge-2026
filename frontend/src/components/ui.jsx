@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom'
 
 // Fuel phase -> fixed categorical slot (colour follows the entity, never its rank).
 export const PHASES = {
-  solid: { label: 'Solid materials', color: 'var(--series-1)', hex: '#3987e5' },
-  liquid: { label: 'Liquid droplets', color: 'var(--series-2)', hex: '#d95926' },
-  gas: { label: 'Gaseous flames', color: 'var(--series-3)', hex: '#199e70' },
-  aerosol: { label: 'Smoke / dust aerosol', color: 'var(--series-other)', hex: '#8a919c' },
+  solid: { label: 'Solid materials', color: 'var(--series-1)', hex: '#4a93ec' },
+  liquid: { label: 'Liquid droplets', color: 'var(--series-2)', hex: '#e5663a' },
+  gas: { label: 'Gaseous flames', color: 'var(--series-3)', hex: '#22b07f' },
+  aerosol: { label: 'Smoke / dust aerosol', color: 'var(--series-other)', hex: '#929aa6' },
 }
 
 export const PILLARS = {
@@ -22,6 +22,28 @@ const STATUS = {
   serious: { color: 'var(--serious)', icon: '!', label: 'Serious gap' },
   warning: { color: 'var(--warning)', icon: '△', label: 'Limited data' },
   good: { color: 'var(--good)', icon: '✓', label: 'Covered' },
+}
+
+/** Theme: 'dark' | 'light', persisted to localStorage and reflected on <html data-theme>. */
+export function useTheme() {
+  const [theme, setTheme] = useState(() => {
+    try { return localStorage.getItem('firesafe-theme') || 'dark' } catch { return 'dark' }
+  })
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    try { localStorage.setItem('firesafe-theme', theme) } catch { /* private mode */ }
+  }, [theme])
+  return [theme, () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))]
+}
+
+export function ThemeToggle({ theme, onToggle }) {
+  const dark = theme !== 'light'
+  return (
+    <button className="btn sm ghost icon-btn" onClick={onToggle} title={`Switch to ${dark ? 'light' : 'dark'} mode`}
+            aria-label={`Switch to ${dark ? 'light' : 'dark'} mode`}>
+      {dark ? '☾' : '☀'}
+    </button>
+  )
 }
 
 export function useAsync(fn, deps = []) {
@@ -68,8 +90,13 @@ export class ErrorBoundary extends Component {
   }
 }
 
-export function Loading({ lines = 3 }) {
-  return <div aria-busy="true">{Array.from({ length: lines }, (_, i) => <div key={i} className="skeleton" style={{ width: `${90 - i * 15}%` }} />)}</div>
+export function Loading({ lines = 3, card = false }) {
+  const body = (
+    <div aria-busy="true" className="skeleton-group">
+      {Array.from({ length: lines }, (_, i) => <div key={i} className="skeleton" style={{ width: `${Math.max(90 - i * 12, 40)}%` }} />)}
+    </div>
+  )
+  return card ? <div className="card">{body}</div> : body
 }
 
 export function ErrorBox({ error }) {
@@ -98,11 +125,34 @@ export function StatusBadge({ severity }) {
   return <span className="status" style={{ color: s.color }}><span className="sicon" style={{ background: s.color }}>{s.icon}</span>{s.label}</span>
 }
 
+/** Count up to a numeric target once, respecting reduced-motion. Falls back to the raw node for strings. */
+function CountUp({ value }) {
+  const num = typeof value === 'number' ? value : null
+  const [shown, setShown] = useState(num ?? 0)
+  useEffect(() => {
+    if (num == null) return
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { setShown(num); return }
+    let raf, start
+    const dur = 650
+    const step = (t) => {
+      start ??= t
+      const p = Math.min((t - start) / dur, 1)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setShown(Math.round(num * eased))
+      if (p < 1) raf = requestAnimationFrame(step)
+    }
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [num])
+  if (num == null) return value
+  return shown.toLocaleString()
+}
+
 export function Stat({ label, value, note }) {
   return (
     <div className="card stat">
       <div className="stat-label">{label}</div>
-      <div className="stat-value">{value}</div>
+      <div className="stat-value"><CountUp value={value} /></div>
       {note && <div className="stat-note">{note}</div>}
     </div>
   )
@@ -137,6 +187,19 @@ function linkify(children) {
     })
   }
   return Array.isArray(children) ? children.map((c, i) => walk(c, i)) : walk(children, 0)
+}
+
+/** Small copy-to-clipboard button with transient "Copied" feedback. */
+export function CopyButton({ text, label = 'Copy', title }) {
+  const [done, setDone] = useState(false)
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(text); setDone(true); setTimeout(() => setDone(false), 1400) } catch { /* denied */ }
+  }
+  return (
+    <button className="btn sm ghost" onClick={copy} title={title || `Copy ${label.toLowerCase()}`} aria-label={title || `Copy ${label.toLowerCase()}`}>
+      {done ? '✓ Copied' : `⧉ ${label}`}
+    </button>
+  )
 }
 
 export function fmtRange(r, unit = '', scale = 1, digits = 3) {
