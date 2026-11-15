@@ -2,6 +2,7 @@ import { Suspense, lazy } from 'react'
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { api } from './api.js'
 import { ErrorBoundary, Loading, ThemeToggle, useAsync, useTheme } from './components/ui.jsx'
+import CommandPalette from './components/CommandPalette.jsx'
 const Overview = lazy(() => import('./pages/Overview.jsx'))
 const Explorer = lazy(() => import('./pages/Explorer.jsx'))
 const InvestigationDetail = lazy(() => import('./pages/InvestigationDetail.jsx'))
@@ -67,6 +68,10 @@ export default function App() {
             <span>{active?.label || 'Overview'}</span>
           </div>
           <div className="row" style={{ gap: 8 }}>
+            <button className="btn sm ghost search-trigger" onClick={() => window.dispatchEvent(new Event('firesafe:palette'))}
+                    aria-label="Open command palette">
+              <span className="muted">⌕ Search</span><kbd>⌘K</kbd>
+            </button>
             {si.data && (
               <span className="tag" title="Answer engine">
                 <span className="dot" style={{ background: si.data.engine === 'claude' ? 'var(--good)' : 'var(--text-muted)' }} />
@@ -94,6 +99,7 @@ export default function App() {
         </Suspense>
         </ErrorBoundary>
       </main>
+      <CommandPalette />
     </div>
   )
 }
